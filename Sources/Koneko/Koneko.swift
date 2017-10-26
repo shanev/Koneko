@@ -1,13 +1,13 @@
 import Foundation
 import HTTP
 
-struct Context {
+public struct Context {
   let queryParameters: [String: Any]
   let request: HTTPRequest
   let response: HTTPResponseWriter
 }
 
-class Router {
+public class Router {
   typealias HTTPHandler = (HTTPRequest, HTTPResponseWriter) -> ()
   typealias HTTPContext = (Context) -> ()
   var mapping = [String: HTTPContext]()
