@@ -2,33 +2,35 @@ import Foundation
 import HTTP
 
 public struct Context {
-  let queryParameters: [String: Any]
-  let request: HTTPRequest
-  let response: HTTPResponseWriter
+  public let queryParameters: [String: Any]
+  public let request: HTTPRequest
+  public let response: HTTPResponseWriter
 }
 
 public class Router {
-  typealias HTTPHandler = (HTTPRequest, HTTPResponseWriter) -> ()
-  typealias HTTPContext = (Context) -> ()
-  var mapping = [String: HTTPContext]()
+  public init() { }
 
-  func get(_ path: String, context: @escaping HTTPContext) {
+  public typealias HTTPHandler = (HTTPRequest, HTTPResponseWriter) -> ()
+  public typealias HTTPContext = (Context) -> ()
+  public var mapping = [String: HTTPContext]()
+
+  public func get(_ path: String, context: @escaping HTTPContext) {
     mapping["\(HTTPMethod.get) \(path)"] = context
   }
 
-  func post(_ path: String, context: @escaping HTTPContext) {
+  public func post(_ path: String, context: @escaping HTTPContext) {
     mapping["\(HTTPMethod.post) \(path)"] = context
   }
 
-  func put(_ path: String, context: @escaping HTTPContext) {
+  public func put(_ path: String, context: @escaping HTTPContext) {
     mapping["\(HTTPMethod.put) \(path)"] = context
   }
 
-  func delete(_ path: String, context: @escaping HTTPContext) {
+  public func delete(_ path: String, context: @escaping HTTPContext) {
     mapping["\(HTTPMethod.delete) \(path)"] = context
   }
 
-  func handler(request: HTTPRequest, response: HTTPResponseWriter) -> HTTPBodyProcessing {
+  public func handler(request: HTTPRequest, response: HTTPResponseWriter) -> HTTPBodyProcessing {
     let target = request.target.split(separator: "?")
     let path = String(target[0])
     let queryString = target.count > 1 ? String(target[1]) : nil
