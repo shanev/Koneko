@@ -64,6 +64,7 @@ public class Router {
     return .processBody { (chunk, stop) in
       switch chunk {
       case .chunk(let data, let finishedProcessing):
+        print("has data chunk")
         bodyData = Data(referencing: data)
         finishedProcessing()
       case .end:
