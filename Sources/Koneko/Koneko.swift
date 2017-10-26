@@ -1,8 +1,15 @@
 import Foundation
 import HTTP
 
+extension Data {
+  init(referencing data: DispatchData) {
+    self = (data as AnyObject) as! Data
+  }
+}
+
 public struct Context {
   public let queryParameters: [String: Any]
+  public let requestData: Data?
   public let request: HTTPRequest
   public let response: HTTPResponseWriter
 }
@@ -52,9 +59,20 @@ public class Router {
       }      
     }
 
-    let context = Context(queryParameters: parameters, request: request, response: response)
-    closure(context)
-    
-    return .discardBody
+    var bodyData: Data? = nil
+
+    return .processBody { (chunk, stop) in
+      switch chunk {
+      case .chunk(let data, let finishedProcessing):
+        bodyData = Data(referencing: data)
+        finishedProcessing()
+      case .end:
+        response.done()
+        closure(Context(queryParameters: parameters, requestData: bodyData, request: request, response: response))
+      default:
+        stop = true
+        response.abort()
+      }
+    }
   }
 }
