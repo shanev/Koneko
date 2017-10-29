@@ -61,19 +61,22 @@ public class Router {
 
     var bodyData: Data? = nil
 
-    return .processBody { (chunk, stop) in
-      switch chunk {
-      case .chunk(let data, let finishedProcessing):
-        print("has data chunk")
-        bodyData = Data(referencing: data)
-        finishedProcessing()
-      case .end:
-        response.done()
-        closure(Context(queryParameters: parameters, requestData: bodyData, request: request, response: response))
-      default:
-        stop = true
-        response.abort()
-      }
-    }
+    // return .processBody { (chunk, stop) in
+    //   switch chunk {
+    //   case .chunk(let data, let finishedProcessing):
+    //     print("has data chunk")
+    //     bodyData = Data(referencing: data)
+    //     finishedProcessing()
+    //   case .end:
+    //     response.done()
+    //     closure(Context(queryParameters: parameters, requestData: bodyData, request: request, response: response))
+    //   default:
+    //     stop = true
+    //     response.abort()
+    //   }
+    // }
+
+    closure(Context(queryParameters: parameters, requestData: bodyData, request: request, response: response))
+    return .discardBody
   }
 }
