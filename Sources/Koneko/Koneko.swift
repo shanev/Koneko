@@ -39,17 +39,17 @@ public class Router: HTTPRequestHandling {
     mapping["\(HTTPMethod.get)\(path)"] = completionHandler
   }
 
-  // public func post(_ path: String, context: @escaping HTTPContext) {
-  //   mapping["\(HTTPMethod.post)\(path)"] = context
-  // }
+  public func post(_ path: String, completionHandler: @escaping (_ req: Request, _ body: Data) -> Response) {
+    mapping["\(HTTPMethod.post)\(path)"] = completionHandler
+  }
 
-  // public func put(_ path: String, context: @escaping HTTPContext) {
-  //   mapping["\(HTTPMethod.put)\(path)"] = context
-  // }
+  public func put(_ path: String, completionHandler: @escaping (_ req: Request, _ body: Data) -> Response) {
+    mapping["\(HTTPMethod.put)\(path)"] = completionHandler
+  }
 
-  // public func delete(_ path: String, context: @escaping HTTPContext) {
-  //   mapping["\(HTTPMethod.delete)\(path)"] = context
-  // }
+  public func delete(_ path: String, completionHandler: @escaping (_ req: Request, _ body: Data) -> Response) {
+    mapping["\(HTTPMethod.delete)\(path)"] = completionHandler
+  }
 
   public func handle(request: HTTPRequest, response: HTTPResponseWriter) -> HTTPBodyProcessing {
     let target = request.target.split(separator: "?")
