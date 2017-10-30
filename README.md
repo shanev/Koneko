@@ -43,6 +43,29 @@ try! server.start(port: 8080, handler: router.handle)
 RunLoop.current.run()
 ```
 
+## Echo Server
+
+```swift
+import Foundation
+import HTTP
+import Koneko
+
+let router = Router()
+router.post("/echo") { _, body -> Response in
+  return Response(body)
+}
+
+let server = HTTPServer()
+try! server.start(port: 8080, handler: router.handle)
+
+RunLoop.current.run()
+```
+
+## Request Handling
+### (Request, Data) -> Response
+
+Every Koneko request has a trailing closure that vends a `Request`, body of type `Data`, and expects a `Response` in return. `Request` includes query parameters as a `Dictionary`. `Response` takes `Data` as the first parameter, with optional `status` and `headers`. It defaults to a status of 200 with empty headers.
+
 ## Codable support
 
 Coming soon.
