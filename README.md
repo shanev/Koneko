@@ -14,7 +14,7 @@ import PackageDescription
 let package = Package(
   name: "MyApp",
   dependencies: [
-    .package(url: "https://github.com/shanev/Koneko", from: "0.0.3"),
+    .package(url: "https://github.com/shanev/Koneko", from: "0.0.6"),
   ],
   targets: [
     .target(
@@ -33,18 +33,16 @@ import Koneko
 
 let router = Router()
 
-router.get("/") { ctx in
-  ctx.response.writeHeader(status: .ok)
-  ctx.response.writeBody("Hello Koneko!") 
-  ctx.response.done() 
+router.get("/") { _, _ -> Response in
+  return Response(Data("Hello, Koneko!".utf8))
 }
 
 let server = HTTPServer()
-try! server.start(port: 8080, handler: router.handler)
+try! server.start(port: 8080, handler: router.handle)
 
 RunLoop.current.run()
 ```
 
-## Context, Request, Response
+## Codable support
 
-The Koneko `Context` object encapsulates an incoming HTTP request and the outgoing response. It provides query parameters as a `queryParameters` Dictionary as a convenience.
+Coming soon.
