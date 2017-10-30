@@ -1,6 +1,6 @@
 # Koneko
 
-Koneko is a Swift web framework for Apple's [Swift HTTP server](https://github.com/swift-server/http). It is currently just a very basic router.
+Koneko is a minimalist Swift web framework for Apple's [Swift HTTP Server](https://github.com/swift-server/http).
 
 **Koneko is in the very early stages of development and _NOT_ production ready.**
 
