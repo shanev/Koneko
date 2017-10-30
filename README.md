@@ -81,7 +81,6 @@ struct Album: Codable {
 
 let router = Router()
 router.get("/artist") { _, _ -> Response in
-  return Response(
-  Artist(name: "Bonobo", id: 5, bestAlbum: Album(name: "Migration")))
+  return Response(Artist(name: "Bonobo", id: 5, bestAlbum: Album(name: "Migration")))
 }
 ```
