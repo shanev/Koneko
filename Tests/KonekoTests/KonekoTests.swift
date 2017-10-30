@@ -107,6 +107,58 @@ class KonekoTests: XCTestCase {
     }
   }
 
+  func testCodableResponse() {
+    let receivedExpectation = self.expectation(description: "Received web response \(#function)")
+
+    struct Artist: Codable {
+      var name: String
+      var id: Int
+      var bestAlbum: Album
+    }
+
+    struct Album: Codable {
+      var name: String
+    }
+
+    let albumName = "Migration"
+
+    let router = Router()
+    router.get("/artist") { _, _ -> Response in
+      return Response(
+        Artist(name: "Bonobo", id: 5, bestAlbum: Album(name: albumName)))
+    }
+
+    let server = HTTPServer()
+    do {
+      try server.start(port: 0, handler: router.handle)
+      let session = URLSession(configuration: .default)
+      let url = URL(string: "http://localhost:\(server.port)/artist")!
+      print("Test \(#function) on port \(server.port)")
+      let dataTask = session.dataTask(with: url) { (data, rawResponse, error) in
+        guard let jsonData = data else {
+          print("Error: did not receive data")
+          return
+        }
+        XCTAssertNotNil(data)
+
+        let jsonDecoder = JSONDecoder()
+        let decoded = try! jsonDecoder.decode(Artist.self, from: jsonData)
+        XCTAssertEqual(albumName, decoded.bestAlbum.name)
+
+        receivedExpectation.fulfill()
+      }
+      dataTask.resume()
+      self.waitForExpectations(timeout: 5) { (error) in
+        if let error = error {
+          XCTFail("\(error)")
+        }
+      }
+      server.stop()
+    } catch {
+      XCTFail("Error listening on port \(0): \(error). Use server.failed(callback:) to handle")
+    }
+  }
+
   func testQueryParameters() {
     let receivedExpectation = self.expectation(description: "Received web response \(#function)")
 
@@ -177,6 +229,7 @@ class KonekoTests: XCTestCase {
     ("test404", test404),
     ("testEcho", testEcho),
     ("testHelloWorld", testHelloWorld),
+    ("testCodableResponse", testCodableResponse),
     ("testQueryParameters", testQueryParameters),
   ]
 }

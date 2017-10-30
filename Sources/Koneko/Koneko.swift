@@ -26,6 +26,16 @@ public struct Response {
     self.status = status
     self.headers = headers
   }
+
+  public init<T: Encodable>(_ body: T, status: HTTPResponseStatus = .ok, headers: HTTPHeaders = [:]) {
+    do {
+      let jsonData = try JSONEncoder().encode(body)
+      self.init(jsonData, status: status, headers: headers)
+    } catch(let error) {
+      print(error.localizedDescription)
+      self.init(status: .internalServerError, headers:headers)
+    }
+  }
 }
 
 public class Router: HTTPRequestHandling {

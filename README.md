@@ -62,10 +62,26 @@ RunLoop.current.run()
 ```
 
 ## Request Handling
-### (Request, Data) -> Response
+#### (Request, Data) -> Response
 
-Every Koneko request has a trailing closure that vends a `Request`, body of type `Data`, and expects a `Response` in return. `Request` includes query parameters as a `Dictionary`. `Response` takes `Data` as the first parameter, with optional `status` and `headers`. It defaults to a status of 200 with empty headers.
+Every Koneko request has a trailing closure that vends a `Request`, body of type `Data`, and expects a `Response` in return. `Request` includes query parameters as a `Dictionary`. `Response` takes `Data` or `Codable` as the first parameter, with optional `status` and `headers`. It defaults to a status of 200 with empty data and headers.
 
 ## Codable support
 
-Coming soon.
+```swift
+struct Artist: Codable {
+  var name: String
+  var id: Int
+  var bestAlbum: Album
+}
+
+struct Album: Codable {
+  var name: String
+}
+
+let router = Router()
+router.get("/artist") { _, _ -> Response in
+  return Response(
+  Artist(name: "Bonobo", id: 5, bestAlbum: Album(name: "Migration")))
+}
+```
