@@ -137,13 +137,45 @@ class KonekoTests: XCTestCase {
     }
   }
 
-  // func testEcho() {
+  func testEcho() {
+    let receivedExpectation = self.expectation(description: "Received web response \(#function)")
+    let testString="This is a test"
 
-  // }
+    let router = Router()
+    router.post("/echo") { _, body -> Response in
+      XCTAssertEqual(testString, String(data: body, encoding: .utf8) ?? "Nil")
+      return Response(body)
+    }
+
+    let server = HTTPServer()
+    do {
+      try server.start(port: 0, handler: router.handle)
+      let session = URLSession(configuration: .default)
+      let url = URL(string: "http://localhost:\(server.port)/echo")!
+      print("Test \(#function) on port \(server.port)")
+      var request = URLRequest(url: url)
+      request.httpMethod = "POST"
+      request.httpBody = testString.data(using: .utf8)
+      request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
+
+      session.dataTask(with: request) { _, _, _ in
+        receivedExpectation.fulfill()
+      }.resume()
+      self.waitForExpectations(timeout: 5) { error in
+        if let error = error {
+          XCTFail("\(error)")
+        }
+      }
+      server.stop()
+    } catch {
+        XCTFail("Error listening on port \(0): \(error). Use server.failed(callback:) to handle")
+    }
+  }
 
   static var allTests = [
     ("testOk", testOk),
     ("test404", test404),
+    ("testEcho", testEcho),
     ("testHelloWorld", testHelloWorld),
     ("testQueryParameters", testQueryParameters),
   ]
