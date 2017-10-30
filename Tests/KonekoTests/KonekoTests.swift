@@ -3,7 +3,7 @@ import XCTest
 @testable import Koneko
 
 class KonekoTests: XCTestCase {
-  func testRoot() {
+  func testOk() {
     let receivedExpectation = self.expectation(description: "Received web response \(#function)")
 
     let router = Router()
@@ -142,7 +142,7 @@ class KonekoTests: XCTestCase {
   // }
 
   static var allTests = [
-    ("testRoot", testRoot),
+    ("testOk", testOk),
     ("test404", test404),
     ("testHelloWorld", testHelloWorld),
     ("testQueryParameters", testQueryParameters),
