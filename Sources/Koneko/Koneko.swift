@@ -1,12 +1,6 @@
 import Foundation
 import HTTP
 
-// extension Data {
-//   init(referencing data: DispatchData) {
-//     self = (data as AnyObject) as! Data
-//   }
-// }
-
 // public struct Context {
 //   public let queryParameters: [String: Any]
 //   public let requestData: Data?
@@ -15,9 +9,15 @@ import HTTP
 // }
 
 public struct Response {
-  public let status: HTTPResponseStatus = .ok
-  public let headers: HTTPHeaders = [:]
-  public let body: Data = Data()
+  public let status: HTTPResponseStatus
+  public let headers: HTTPHeaders
+  public let body: Data
+
+  init(_ body: Data = Data(), status: HTTPResponseStatus = .ok, headers: HTTPHeaders = [:]) {
+    self.body = body
+    self.status = status
+    self.headers = headers
+  }
 }
 
 public class Router: HTTPRequestHandling {
@@ -28,7 +28,6 @@ public class Router: HTTPRequestHandling {
   public init() { }
 
   public func get(_ path: String, completionHandler: @escaping (_ req: HTTPRequest, _ body: Data) -> Response) {
-  // public func get(_ path: String, completionHandler: @escaping HandlerBlock) {
     mapping["\(HTTPMethod.get)\(path)"] = completionHandler
   }
 
