@@ -1,19 +1,27 @@
 import Foundation
 import HTTP
 
-// public struct Context {
-//   public let queryParameters: [String: Any]
-//   public let requestData: Data?
-//   public let request: HTTPRequest
-//   public let response: HTTPResponseWriter
-// }
+public struct Request {
+  public let queryParameters: [String: Any]
+
+  init(queryString: String) {
+    var parameters = [String: Any]()
+    for item in queryString.split(separator: "&") {
+      let pair = item.split(separator: "=")
+      let key = pair[0]
+      let value = pair[1]
+      parameters[String(key)] = Int(value) ?? String(value)
+    }
+    self.queryParameters = parameters
+  }
+}
 
 public struct Response {
   public let status: HTTPResponseStatus
   public let headers: HTTPHeaders
   public let body: Data
 
-  init(_ body: Data = Data(), status: HTTPResponseStatus = .ok, headers: HTTPHeaders = [:]) {
+  public init(_ body: Data = Data(), status: HTTPResponseStatus = .ok, headers: HTTPHeaders = [:]) {
     self.body = body
     self.status = status
     self.headers = headers
@@ -21,13 +29,13 @@ public struct Response {
 }
 
 public class Router: HTTPRequestHandling {
-  typealias HandlerBlock = (_ req: HTTPRequest, _ body: Data) -> Response
+  typealias HandlerBlock = (_ req: Request, _ body: Data) -> Response
   var buffer = Data()
   var mapping = [String: HandlerBlock]()
 
   public init() { }
 
-  public func get(_ path: String, completionHandler: @escaping (_ req: HTTPRequest, _ body: Data) -> Response) {
+  public func get(_ path: String, completionHandler: @escaping (_ req: Request, _ body: Data) -> Response) {
     mapping["\(HTTPMethod.get)\(path)"] = completionHandler
   }
 
@@ -49,22 +57,12 @@ public class Router: HTTPRequestHandling {
  
     guard let completionHandler: HandlerBlock = mapping["\(request.method)\(path)"] else {
       response.writeHeader(status: .notFound)
-      response.writeBody("404 Not Found") 
+      response.writeBody("Not Found") 
       response.done()      
       return .discardBody
     }
 
-    // let queryString = target.count > 1 ? String(target[1]) : nil
-
-    // var parameters = [String: Any]()
-    // if let query = queryString {
-    //   for item in query.split(separator: "&") {
-    //     let pair = item.split(separator: "=")
-    //     let key = pair[0]
-    //     let value = pair[1]
-    //     parameters[String(key)] = value
-    //   }      
-    // }
+    let konekoRequest = Request(queryString: target.count > 1 ? String(target[1]) : "")
 
     return .processBody { (chunk, stop) in
       switch chunk {
@@ -74,7 +72,7 @@ public class Router: HTTPRequestHandling {
         }
         finishedProcessing()
       case .end:
-        let responseResult = completionHandler(request, self.buffer)
+        let responseResult = completionHandler(konekoRequest, self.buffer)
         var headers = responseResult.headers
         headers.replace([.transferEncoding: "chunked"])
         response.writeHeader(status: responseResult.status, headers: headers)
